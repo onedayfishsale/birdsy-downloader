@@ -7,7 +7,7 @@ Perl script to download your wildlife video clips from birdsy.com
 
 ## Synopsis
 
-`.\birdsy.pl --action=<action> --date=<YYYY-MM-DD>`
+`./birdsy.pl --action=<action> --date=<YYYY-MM-DD>`
 where `<action>` is `list`, `delete`, `download`, or `sync`
 
 ## Actions
