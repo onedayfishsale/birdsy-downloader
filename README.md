@@ -13,7 +13,8 @@ where `<action>` is `list`, `delete`, `download`, or `sync`
 ## Actions
 ### list
 Lists videos for a single day.
-```$ ./birdsy.pl --action=list --date=2024-08-10
+```
+$ ./birdsy.pl --action=list --date=2024-08-10
 Found 2 videos for 2024-08-10T00:00:00. Loading...
 
 Title:     Wildlife visits
@@ -38,7 +39,8 @@ $
 ### delete
 Deletes add non-favorited videos for a single day.
 
-```$ ./birdsy.pl --action=list --date=2024-08-10
+```
+$ ./birdsy.pl --action=list --date=2024-08-10
 ...
 ```
 
@@ -48,7 +50,8 @@ Downloads favorited videos for a single day. Three files are created for each vi
  - `<id>.jpg`: video clip thumbnail, JPEG
  - `<id>.mp4`: video clip, MP4
 
-```$ ./birdsy.pl --action=download --date=2024-08-10
+```
+$ ./birdsy.pl --action=download --date=2024-08-10
 Found 2 videos for 2024-08-10T00:00:00. Loading...
 
 Title:     Wildlife visits
@@ -83,7 +86,8 @@ $
 ### sync
 Downloads all favorited videos from all days if they haven't already been downloaded.
 
-```$ ./birdsy.pl --action=sync
+```
+$ ./birdsy.pl --action=sync
 Syncing 1 videos for 2021-05-21T00:00:00.
 85bv_DlXpMQp already downloaded. (Delete /tmp/birdsy/85bv_DlXpMQp.csv to re-download.)
 
