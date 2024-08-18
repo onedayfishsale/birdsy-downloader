@@ -1,6 +1,9 @@
 # birdsy-downloader
 Perl script to download your wildlife video clips from birdsy.com
 
+## Support
+Report issues via [GitHub Issues](https://github.com/onedayfishsale/birdsy-downloader/issues). I believe there is a [Facebook group](https://www.facebook.com/groups/1705527023541736/) using this code and posting tutorials, but I'm not on Facebook so can't participate directly. Feel free to email josh@feep.org, or if you're on the fediverse (Mastodon, etc.), message @josh@feep.org.
+
 ## Setup
 1. Update config.ph with your birdsy.com username and password. Change the download path to a path that exists on your computer.
 2. Update the `require` path in birdsy.pl to the actual path of your config.ph.
@@ -40,7 +43,7 @@ $
 Deletes add non-favorited videos for a single day.
 
 ```
-$ ./birdsy.pl --action=list --date=2024-08-10
+$ ./birdsy.pl --action=delete --date=2024-08-10
 ...
 ```
 
