@@ -2,7 +2,9 @@
 Perl script to download your wildlife video clips from birdsy.com
 
 ## Support
-Report issues via [GitHub Issues](https://github.com/onedayfishsale/birdsy-downloader/issues). I believe there is a [Facebook group](https://www.facebook.com/groups/1705527023541736/) using this code and posting tutorials, but I'm not on Facebook so can't participate directly. Feel free to email josh@feep.org, or if you're on the fediverse (Mastodon, etc.), message @josh@feep.org.
+Report issues via [GitHub Issues](https://github.com/onedayfishsale/birdsy-downloader/issues). I believe there is a [Facebook group](https://www.facebook.com/groups/1705527023541736/) using this code, but I'm not on Facebook so can't participate directly. Feel free to email josh@feep.org, or if you're on the fediverse (Mastodon, etc.), message [@josh@feep.org](https://social.feep.org/@josh).
+
+A Birdsy friend, Dusty, recorded [a tutorial](https://www.loom.com/share/e0e180564a2242c0897a9e9cd075ce70?sid=7f7fdb57-b345-4ca0-b59c-78f7104fbd92) for running this script on Windows using Strawberry Perl. I've tested it briefly on Windows 11 and it works fine. Thanks, Dusty!
 
 ## Setup
 1. Update config.ph with your birdsy.com username and password. Change the download path to a path that exists on your computer.
