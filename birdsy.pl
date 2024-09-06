@@ -62,6 +62,31 @@ sub getAuthToken {
   }
 }
 
+sub getSpecies {
+  my $token = shift(@_);
+  my $id    = shift(@_);
+
+  my @species = ();
+
+  my $birdsy = HTTP::Request->new(
+    GET => "https://birdsy.com/api/v1/episodes/$id/birds"
+  );
+  $birdsy->header('authorization' => $token);
+  $birdsy->header('Accept'        => 'application/json');
+
+  my $ua = LWP::UserAgent->new();
+  my $res = $ua->request($birdsy);
+
+  if ($res->is_success) {
+    my $json = decode_json($res->content());
+    for my $data (@{$json->{'data'}}) {
+      push @species, $data->{'attributes'}{'name'};
+    }
+  }
+
+  return \@species;
+}
+
 sub getAllVideoCounts {
   my $token = shift(@_);
 
@@ -179,7 +204,7 @@ my $token = getAuthToken($main::BIRDSY_EMAIL, $main::BIRDSY_PASSWORD);
 #
 if ($action eq 'sync') {
   foreach my $day (reverse(getAllVideoCounts($token))) {
-    print "Syncing $day->{'count'} videos for $day->{'date'}.\n";
+    print "Syncing $day->{'count'} videos for $day->{'date'}.\n\n";
 
     my $videos = getAllVideosForDate($token, $day->{'date'});
     foreach my $video (@$videos) {
@@ -187,32 +212,37 @@ if ($action eq 'sync') {
       my $thumbfile = "$main::DOWNLOAD_PATH/$video->{'id'}.jpg";
       my $videofile = "$main::DOWNLOAD_PATH/$video->{'id'}.mp4";
 
-      if (-e $csv) {
-        print "$video->{'id'} already downloaded. (Delete $csv to re-download.)\n";
-        next;
-      }
-
       my $favorite = "false";
       if ($video->{'attributes'}->{'favorite'}) {
         $favorite = "true";
       }
+
+      my $species = getSpecies($token, $video->{'id'});
 
       if (! $video->{'attributes'}->{'favorite'}) {
         print "Not downloading $video->{'id'} (not marked as favorite).";
       } else {
         print "Metadata:  $csv\n";
         open(my $fh, '>', $csv) or die "Couldn't open $csv: $!";
-        print $fh "id,title,favorite,uploaded,duration,thumbnail,video\n";
-        print $fh "$video->{'id'},$video->{'attributes'}->{'title'},$favorite,$video->{'attributes'}->{'formatted_recorded_at'},$video->{'attributes'}->{'duration'} s,$video->{'attributes'}->{'image_url'},$video->{'attributes'}->{'video_url'}\n";
+        print $fh "id,title,species,favorite,uploaded,duration,thumbnail,video\n";
+        print $fh "$video->{'id'},$video->{'attributes'}->{'title'},", join(':', @{$species}), ",$favorite,$video->{'attributes'}->{'formatted_recorded_at'},$video->{'attributes'}->{'duration'} s,$video->{'attributes'}->{'image_url'},$video->{'attributes'}->{'video_url'}\n";
         close($fh);
   
         print "Thumbnail: $thumbfile\n";
-        getstore($video->{'attributes'}->{'image_url'}, $thumbfile)
-          or die "Couldn't download thumbnail: $!";
+        if (-e $thumbfile) {
+          print "  $video->{'id'}.jpg already downloaded. Delete it to re-download.\n";
+        } else {
+          getstore($video->{'attributes'}->{'image_url'}, $thumbfile)
+            or die "Couldn't download thumbnail: $!";
+        }
   
         print "Video:     $videofile\n";
-        getstore($video->{'attributes'}->{'video_url'}, $videofile)
-          or die "Couldn't download video: $!";
+        if (-e $videofile) {
+          print "  $video->{'id'}.mp4 already downloaded. Delete it to re-download.\n";
+        } else {
+          getstore($video->{'attributes'}->{'video_url'}, $videofile)
+            or die "Couldn't download video: $!";
+        }
       }
       print "\n";
     }
@@ -239,10 +269,13 @@ if ($action eq 'list' or $action eq 'delete' or $action eq 'download') {
     if ($video->{'attributes'}->{'favorite'}) {
       $favorite = "true";
     }
-  
+
+    my $species = getSpecies($token, $video->{'id'});
+
     print "\n\n";
     print "Title:     $video->{'attributes'}->{'title'}\n";
     print "ID:        $video->{'id'}\n";
+    print "Species:   ", join(', ', @{$species}), "\n";
     print "Favorite:  $favorite\n";
     print "Uploaded:  $video->{'attributes'}->{'formatted_recorded_at'}\n";
     print "Duration:  $video->{'attributes'}->{'duration'} s\n";
@@ -270,8 +303,8 @@ if ($action eq 'list' or $action eq 'delete' or $action eq 'download') {
         my $csv = "$main::DOWNLOAD_PATH/$video->{'id'}.csv";
         print "Metadata:  $csv\n";
         open(my $fh, '>', $csv) or die "Couldn't open $csv: $!";
-        print $fh "id,title,favorite,uploaded,duration,thumbnail,video\n";
-        print $fh "$video->{'id'},$video->{'attributes'}->{'title'},$favorite,$video->{'attributes'}->{'formatted_recorded_at'},$video->{'attributes'}->{'duration'} s,$video->{'attributes'}->{'image_url'},$video->{'attributes'}->{'video_url'}\n";
+        print $fh "id,title,species,favorite,uploaded,duration,thumbnail,video\n";
+        print $fh "$video->{'id'},$video->{'attributes'}->{'title'},", join(':', @{$species}), ",$favorite,$video->{'attributes'}->{'formatted_recorded_at'},$video->{'attributes'}->{'duration'} s,$video->{'attributes'}->{'image_url'},$video->{'attributes'}->{'video_url'}\n";
         close($fh);
   
         my $thumbfile = "$main::DOWNLOAD_PATH/$video->{'id'}.jpg";
