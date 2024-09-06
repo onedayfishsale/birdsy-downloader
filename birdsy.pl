@@ -8,7 +8,7 @@ use LWP::UserAgent;
 use LWP::Simple;
 use JSON::PP;
 
-require '/home/josh/projects/birdsy/config.ph';
+require '/tmp/birdsy-dev/config.ph';
 
 my $action = 'none';
 my $date;
@@ -55,7 +55,10 @@ sub getAuthToken {
     my $data = decode_json($res->content());
     return $data->{'data'}{'attributes'}{'token'};
   } else {
-    return -1;
+    if (my $message = decode_json($res->content())->{'message'}) {
+      print "$message\n";
+    }
+    die $res->status_line;
   }
 }
 
@@ -75,7 +78,10 @@ sub getAllVideoCounts {
     my $days = decode_json($res->content());
     return @{$days->{'meta'}{'days'}};
   } else {
-    return -1;
+    if (my $message = decode_json($res->content())->{'message'}) {
+      print "$message\n";
+    }
+    die $res->status_line;
   }
 }
 
@@ -101,7 +107,10 @@ sub getVideoCountForDate {
     }
     return $count;
   } else {
-    return -1;
+    if (my $message = decode_json($res->content())->{'message'}) {
+      print "$message\n";
+    }
+    die $res->status_line;
   }
 }
 
@@ -131,8 +140,6 @@ sub getAllVideosForDate {
       next;
     }
 
-#    print ".";
-#    $|++;
     $page++;
   }
   return \@videos;
