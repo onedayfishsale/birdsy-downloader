@@ -7,6 +7,8 @@ use Getopt::Long;
 use LWP::UserAgent; 
 use LWP::Simple;
 use JSON::PP;
+use Date::Parse qw(str2time);
+use POSIX qw( strftime );
 
 require '/tmp/birdsy-dev/config.ph';
 
@@ -217,6 +219,9 @@ if ($action eq 'sync') {
         $favorite = "true";
       }
 
+      $video->{'attributes'}->{'title'} =~ s/,//g;
+      my $time = strftime('%Y-%m-%dT%H:%M:%SZ', gmtime(str2time($video->{'attributes'}->{'formatted_recorded_at'})));
+
       my $species = getSpecies($token, $video->{'id'});
 
       if (! $video->{'attributes'}->{'favorite'}) {
@@ -225,7 +230,7 @@ if ($action eq 'sync') {
         print "Metadata:  $csv\n";
         open(my $fh, '>', $csv) or die "Couldn't open $csv: $!";
         print $fh "id,title,species,favorite,uploaded,duration,thumbnail,video\n";
-        print $fh "$video->{'id'},$video->{'attributes'}->{'title'},", join(':', @{$species}), ",$favorite,$video->{'attributes'}->{'formatted_recorded_at'},$video->{'attributes'}->{'duration'} s,$video->{'attributes'}->{'image_url'},$video->{'attributes'}->{'video_url'}\n";
+        print $fh "$video->{'id'},$video->{'attributes'}->{'title'},", join(':', @{$species}), ",$favorite,$time,$video->{'attributes'}->{'duration'} s,$video->{'attributes'}->{'image_url'},$video->{'attributes'}->{'video_url'}\n";
         close($fh);
   
         print "Thumbnail: $thumbfile\n";
@@ -270,6 +275,9 @@ if ($action eq 'list' or $action eq 'delete' or $action eq 'download') {
       $favorite = "true";
     }
 
+    $video->{'attributes'}->{'title'} =~ s/,//g;
+    my $time = strftime('%Y-%m-%dT%H:%M:%SZ', gmtime(str2time($video->{'attributes'}->{'formatted_recorded_at'})));
+
     my $species = getSpecies($token, $video->{'id'});
 
     print "\n\n";
@@ -277,7 +285,7 @@ if ($action eq 'list' or $action eq 'delete' or $action eq 'download') {
     print "ID:        $video->{'id'}\n";
     print "Species:   ", join(', ', @{$species}), "\n";
     print "Favorite:  $favorite\n";
-    print "Uploaded:  $video->{'attributes'}->{'formatted_recorded_at'}\n";
+    print "Uploaded:  $time\n";
     print "Duration:  $video->{'attributes'}->{'duration'} s\n";
     print "Thumbnail: $video->{'attributes'}->{'image_url'}\n";
     print "Video:     $video->{'attributes'}->{'video_url'}\n";
@@ -304,7 +312,7 @@ if ($action eq 'list' or $action eq 'delete' or $action eq 'download') {
         print "Metadata:  $csv\n";
         open(my $fh, '>', $csv) or die "Couldn't open $csv: $!";
         print $fh "id,title,species,favorite,uploaded,duration,thumbnail,video\n";
-        print $fh "$video->{'id'},$video->{'attributes'}->{'title'},", join(':', @{$species}), ",$favorite,$video->{'attributes'}->{'formatted_recorded_at'},$video->{'attributes'}->{'duration'} s,$video->{'attributes'}->{'image_url'},$video->{'attributes'}->{'video_url'}\n";
+        print $fh "$video->{'id'},$video->{'attributes'}->{'title'},", join(':', @{$species}), ",$favorite,$time,$video->{'attributes'}->{'duration'} s,$video->{'attributes'}->{'image_url'},$video->{'attributes'}->{'video_url'}\n";
         close($fh);
   
         my $thumbfile = "$main::DOWNLOAD_PATH/$video->{'id'}.jpg";
