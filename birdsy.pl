@@ -57,8 +57,8 @@ sub getAuthToken {
     my $data = decode_json($res->content());
     return $data->{'data'}{'attributes'}{'token'};
   } else {
-    if (my $message = decode_json($res->content())->{'message'}) {
-      print "$message\n";
+    if ($res->content()) {
+      print $res->content(), "\n";
     }
     die $res->status_line;
   }
@@ -105,8 +105,8 @@ sub getAllVideoCounts {
     my $days = decode_json($res->content());
     return @{$days->{'meta'}{'days'}};
   } else {
-    if (my $message = decode_json($res->content())->{'message'}) {
-      print "$message\n";
+    if ($res->content()) {
+      print $res->content(), "\n";
     }
     die $res->status_line;
   }
@@ -134,8 +134,8 @@ sub getVideoCountForDate {
     }
     return $count;
   } else {
-    if (my $message = decode_json($res->content())->{'message'}) {
-      print "$message\n";
+    if ($res->content()) {
+      print $res->content(), "\n";
     }
     die $res->status_line;
   }
